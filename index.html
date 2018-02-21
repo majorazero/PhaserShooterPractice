@@ -16,7 +16,7 @@
         //  Be sure to replace it with an updated version before you start experimenting with adding your own code.
 
         var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update:update });
-        var platforms;
+
 
         function preload () {
           game.load.image('sky','assets/sky.png');
@@ -53,15 +53,54 @@
        	player.body.bounce.y = 0.2;
        	player.body.gravity.y = 300;
        	player.body.collideWorldBounds = true;
+        player.body.mass = 0.2;
        	//player animaton
        	player.animations.add('left',[0,1,2,3],10,true);
        	player.animations.add('right',[5,6,7,8],10,true);
+
+        //create bad guy
+        baddie = game.add.sprite(350, game.world.height-150,'baddie');
+        game.physics.arcade.enable(baddie);
+        baddie.body.bounce.y = 0.2;
+       	baddie.body.gravity.y = 300;
+       	baddie.body.collideWorldBounds = true;
+        baddie.body.mass = 0.8;
+        //baddie animations
+        baddie.animations.add('bleft',[0,1],5,true);
+        baddie.animations.add('bright',[2,3],5,true);
 
       }
 
       function update(){
         //allows the player to interact with platforms
         var hitPlatform = game.physics.arcade.collide(player,platforms);
+        //allows the monster to interact with platforms
+        var bHitPlatform = game.physics.arcade.collide(baddie,platforms);
+        var bHitPlayer = game.physics.arcade.collide(baddie,player);
+
+        //AI?
+        //auto pathing
+        if(baddie.frame == 0 || baddie.x == 768){
+          baddie.body.velocity.x = -150;
+          baddie.animations.play('bleft');
+        }
+        if(baddie.x == 0){ //|| bHitPlayer){
+          baddie.body.velocity.x = 150;
+          baddie.animations.play('bright');
+        }
+        if(bHitPlayer){
+          if(baddie.animations.play('bleft')){
+            baddie.animations.play('bright');
+            baddie.body.velocity.x=150;
+            //player.body.offset.x = -100;
+          }
+          else{
+            baddie.animations.play('bright');
+            baddie.body.velocity.x=-150;
+            //player.body.offset.x = 100;
+          }
+        }
+
         //player control
       	player.body.velocity.x = 0; //default movement if not controlled
 
