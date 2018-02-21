@@ -15,20 +15,85 @@
         //  Although it will work fine with this tutorial, it's almost certainly not the most current version.
         //  Be sure to replace it with an updated version before you start experimenting with adding your own code.
 
-        var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create });
+        var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update:update });
+        var platforms;
 
         function preload () {
-
-            game.load.image('logo', 'phaser.png');
+          game.load.image('sky','assets/sky.png');
+          game.load.image('ground','assets/platform.png');
+          game.load.image('star','assets/star.png');
+          game.load.spritesheet('dude','assets/dude.png',32,48);
+          game.load.spritesheet('baddie','assets/baddie.png',32,32);
 
         }
 
         function create () {
+          game.physics.startSystem(Phaser.Physics.ARCADE); //enable arcade Physics
+          game.add.sprite(0,0,'sky');
+          platforms = game.add.group(); //contains ground and 2 ledges
+          platforms.enableBody = true; //give these assets form
+          var ground = platforms.create(0, game.world.height-64,'ground'); //ground creation relative to the map
+          ground.scale.setTo(2,2);//original ground sprite is 400x32 so we scaled it to fit the map
+          ground.body.immovable = true; //won't fall away when you jump on it
 
-            var logo = game.add.sprite(game.world.centerX, game.world.centerY, 'logo');
-            logo.anchor.setTo(0.5, 0.5);
+          //creates 2 ledges
 
+         var ledge = platforms.create(400,400,'ground');
+         ledge.body.immovable = true; //self-explanatory
+         ledge = platforms.create(150,250, 'ground');
+         ledge.body.immovable = true;
+         ledge = platforms.create(500,100, 'ground'); //y = 0 top of the screen, +x moves it to the right
+         ledge.body.immovable = true;
+
+        //creates player
+       	player = game.add.sprite(32, game.world.height-150,'dude');
+       	//enables physics on player
+       	game.physics.arcade.enable(player);
+       	//player physics properties. gives him bounce?
+       	player.body.bounce.y = 0.2;
+       	player.body.gravity.y = 300;
+       	player.body.collideWorldBounds = true;
+       	//player animaton
+       	player.animations.add('left',[0,1,2,3],10,true);
+       	player.animations.add('right',[5,6,7,8],10,true);
+
+      }
+
+      function update(){
+        //allows the player to interact with platforms
+        var hitPlatform = game.physics.arcade.collide(player,platforms);
+        //player control
+      	player.body.velocity.x = 0; //default movement if not controlled
+
+      	cursors = game.input.keyboard.createCursorKeys(); //keyboard event listener for phasor
+      	if (cursors.left.isDown){ //cursors is the event listener for phaser for keys
+      		player.body.velocity.x = -150; //moves sprite left
+      		player.animations.play('left'); //plays assigned left animation
+      	}
+      	else if (cursors.right.isDown){
+      		player.body.velocity.x = 150;
+      		player.animations.play('right');
+      	}
+      	else{
+      		player.animations.stop(); //sets animation to standing still
+      		player.frame = 4; // specifies what frame to set it to.
+      	}
+
+      	//jump functionality
+      	if(cursors.up.isDown && player.body.touching.down && hitPlatform){
+      		//if up is pressed down, player is touchingthe ground
+      		//hitPlatform probably returns true if player actually touching the background
+      		player.body.velocity.y =-300; //i guess jumping up is negative coordinates
+      	}
+        if (cursors.down.isDown){ //lets you drop down faster
+          if (player.body.velocity.y != 300){
+              player.body.velocity.y += 25;
+          }
+          else{
+            player.body.velocity.y = 300;
+          }
         }
+      }
 
     };
 
