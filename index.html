@@ -65,8 +65,8 @@
         player.animations.add('leftIdle',[0,1,2],7,true);
         player.animations.add('right',[7,8,9,10],10,true);
         player.animations.add('righttIdle',[11,12,13],7,true);
-        player.animations.add('Ljump',[3,5],10,false);
-        player.animations.add('Rjump',[8,10],10,false);
+        player.animations.add('Ljump',[3,5],10,true);
+        player.animations.add('Rjump',[8,10],10,true);
         player.animations.add('down',[1,4,6],10,true);
 
         //create bad guy
@@ -119,8 +119,12 @@
         if (cursors.left.isDown){ //cursors is the event listener for phaser for keys
 
           player.body.velocity.x = -300;
-
-      		player.animations.play('left'); //plays assigned left animation
+          if(player.body.touching.down){
+            player.animations.play('left'); //plays assigned left animation
+          }
+          else {
+            player.animations.play('Ljump');
+          }
 
       	}
         /*else if(cursors.SPACEBAR.isDown){
@@ -129,8 +133,12 @@
       	else if (cursors.right.isDown){
 
           player.body.velocity.x = 300;
-
-      		player.animations.play('right');
+          if(player.body.touching.down){
+      		    player.animations.play('right');
+          }
+          else {
+            player.animations.play('Rjump');
+          }
       	}
 
 
