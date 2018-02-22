@@ -4,6 +4,7 @@
         <meta charset="UTF-8" />
         <title>hello phaser!</title>
         <script src="//cdn.jsdelivr.net/phaser/2.5.0/phaser.min.js"></script>
+        <script src="otherFunctions.js"></script>
     </head>
     <body>
 
@@ -73,12 +74,14 @@
         baddie = game.add.sprite(350, game.world.height-150,'baddie');
         game.physics.arcade.enable(baddie);
         baddie.body.bounce.y = 0.2;
-       	baddie.body.gravity.y = 300;
-       	baddie.body.collideWorldBounds = true;
+        baddie.body.gravity.y = 300;
+        baddie.body.collideWorldBounds = true;
         baddie.body.mass = 0.8;
         //baddie animations
         baddie.animations.add('bleft',[0,1],5,true);
         baddie.animations.add('bright',[2,3],5,true);
+
+        //addBaddie(game);
 
       }
 
