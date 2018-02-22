@@ -65,7 +65,8 @@
         player.animations.add('leftIdle',[0,1,2],7,true);
         player.animations.add('right',[7,8,9,10],10,true);
         player.animations.add('righttIdle',[11,12,13],7,true);
-        player.animations.add('jump',[3,5],10,false);
+        player.animations.add('Ljump',[3,5],10,false);
+        player.animations.add('Rjump',[8,10],10,false);
         player.animations.add('down',[1,4,6],10,true);
 
         //create bad guy
@@ -131,23 +132,26 @@
 
       		player.animations.play('right');
       	}
-      	else{
-      		player.animations.play('righttIdle'); //sets animation to standing still
+
+
+        else if (cursors.down.isDown){ //lets you drop down faster
+          player.animations.play('down');
+        }
+
+        else{
+
+      		  player.animations.play('righttIdle'); //sets animation to standing still
       		//player.frame = 4; // specifies what frame to set it to.
       	}
-
-      	//jump functionality
+        //jump functionality
       	if(cursors.up.isDown && player.body.touching.down && hitPlatform){
       		//if up is pressed down, player is touchingthe ground
       		//hitPlatform probably returns true if player actually touching the background
       		player.body.velocity.y =-300; //i guess jumping up is negative coordinates
-          player.animations.play('jump');
-      	}
-        if (cursors.down.isDown){ //lets you drop down faster
-          player.animations.play('down');
+          player.animations.stop();
         }
     }
-  
+
   }
 
     </script>
