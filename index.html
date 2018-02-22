@@ -24,6 +24,7 @@
           game.load.image('star','assets/star.png');
           game.load.spritesheet('dude','assets/dude.png',32,48);
           game.load.spritesheet('baddie','assets/baddie.png',32,32);
+          game.load.spritesheet('sillyDude','assets/sillyDude.png',64,116);
 
         }
 
@@ -46,7 +47,9 @@
          ledge.body.immovable = true;
 
         //creates player
-       	player = game.add.sprite(32, game.world.height-150,'dude');
+       //	player = game.add.sprite(32, game.world.height-150,'dude');
+        player = game.add.sprite(64, game.world.height-250,'sillyDude');
+        player.frame = 0;
        	//enables physics on player
        	game.physics.arcade.enable(player);
        	//player physics properties. gives him bounce?
@@ -55,8 +58,15 @@
        	player.body.collideWorldBounds = true;
         player.body.mass = 0.2;
        	//player animaton
-       	player.animations.add('left',[0,1,2,3],10,true);
-       	player.animations.add('right',[5,6,7,8],10,true);
+       /*	player.animations.add('left',[0,1,2,3],10,true);
+       	player.animations.add('right',[5,6,7,8],10,true);*/
+        //sillydude animation
+        player.animations.add('left',[3,4,5,6],10,true);
+        player.animations.add('leftIdle',[0,1,2],7,true);
+        player.animations.add('right',[7,8,9,10],10,true);
+        player.animations.add('righttIdle',[11,12,13],7,true);
+        player.animations.add('jump',[3,5],10,false);
+        player.animations.add('down',[1,4,6],10,true);
 
         //create bad guy
         baddie = game.add.sprite(350, game.world.height-150,'baddie');
@@ -71,7 +81,7 @@
 
       }
 
-      function update(){
+      function update() {
         //allows the player to interact with platforms
         var hitPlatform = game.physics.arcade.collide(player,platforms);
         //allows the monster to interact with platforms
@@ -103,26 +113,27 @@
 
         //player control
       	player.body.velocity.x = 0; //default movement if not controlled
-
       	cursors = game.input.keyboard.createCursorKeys(); //keyboard event listener for phasor
-      	if (cursors.left.isDown){ //cursors is the event listener for phaser for keys
+
+        if (cursors.left.isDown){ //cursors is the event listener for phaser for keys
 
           player.body.velocity.x = -300;
 
       		player.animations.play('left'); //plays assigned left animation
+
       	}
         /*else if(cursors.SPACEBAR.isDown){
           player.body.velocity.x= -500;
         }*/
       	else if (cursors.right.isDown){
 
-            player.body.velocity.x = 300;
+          player.body.velocity.x = 300;
 
       		player.animations.play('right');
       	}
       	else{
-      		player.animations.stop(); //sets animation to standing still
-      		player.frame = 4; // specifies what frame to set it to.
+      		player.animations.play('righttIdle'); //sets animation to standing still
+      		//player.frame = 4; // specifies what frame to set it to.
       	}
 
       	//jump functionality
@@ -130,18 +141,14 @@
       		//if up is pressed down, player is touchingthe ground
       		//hitPlatform probably returns true if player actually touching the background
       		player.body.velocity.y =-300; //i guess jumping up is negative coordinates
+          player.animations.play('jump');
       	}
         if (cursors.down.isDown){ //lets you drop down faster
-          if (player.body.velocity.y != 300){
-              player.body.velocity.y += 25;
-          }
-          else{
-            player.body.velocity.y = 300;
-          }
+          player.animations.play('down');
         }
-      }
-
-    };
+    }
+  
+  }
 
     </script>
 
