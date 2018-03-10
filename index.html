@@ -15,7 +15,7 @@
         //  Although it will work fine with this tutorial, it's almost certainly not the most current version.
         //  Be sure to replace it with an updated version before you start experimenting with adding your own code.
 
-        var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update:update});
+        var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update:update, shoot:shoot});
 
 
         function preload () {
@@ -79,6 +79,39 @@
           //baddie animations
           baddie.animations.add('bleft',[0,1],5,true);
           baddie.animations.add('bright',[2,3],5,true);
+
+          //creates projectiles
+          projectilePool = game.add.group();
+          console.log(projectilePool);
+          for (var i = 0; i < 100; i++){
+            var proj = game.add.sprite(0,0,'baddie');
+            projectilePool.add(proj);
+            proj.anchor.setTo(0.5,0.5);
+            game.physics.enable(proj,Phaser.Physics.ARCADE);
+            proj.kill();
+          }
+          console.log(projectilePool.getFirstDead());
+      }
+
+      function shoot(){
+        if (this.lastProjShot === undefined) {this.lastProjShot = 0;}
+        if (game.time.now - lastProjShot < 100) {return;}
+        lastProjShot = game.time.now;
+
+        var proj = projectilePool.getFirstDead();
+        console.log(projectilePool.getFirstDead());
+        if (proj === null || proj === undefined){
+          return;
+        }
+        proj.revive();
+
+        proj.checkWorldBounds = true;
+        proj.outOfBoundsKill = true;
+
+        proj.reset(player.x,player.y);
+
+        proj.body.velocity.x = 200;
+        proj.body.velocity.y = 0;
       }
 
       function update() {
@@ -156,6 +189,9 @@
       		//hitPlatform probably returns true if player actually touching the background
       		player.body.velocity.y =-300; //i guess jumping up is negative coordinates
           player.animations.stop();
+        }
+        if (this.game.input.activePointer.isDown){
+          shoot();
         }
     }
 
