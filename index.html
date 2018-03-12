@@ -57,6 +57,7 @@
          	player.body.gravity.y = 300;
          	player.body.collideWorldBounds = true;
           player.body.mass = 0.2;
+          player.dirFace = 1;
          	//player animaton
          /*	player.animations.add('left',[0,1,2,3],10,true);
          	player.animations.add('right',[5,6,7,8],10,true);*/
@@ -82,7 +83,6 @@
 
           //creates projectiles
           projectilePool = game.add.group();
-          console.log(projectilePool);
           for (var i = 0; i < 100; i++){
             var proj = game.add.sprite(0,0,'baddie');
             projectilePool.add(proj);
@@ -90,16 +90,14 @@
             game.physics.enable(proj,Phaser.Physics.ARCADE);
             proj.kill();
           }
-          console.log(projectilePool.getFirstDead());
       }
 
-      function shoot(){
+      function shoot(dir){
         if (this.lastProjShot === undefined) {this.lastProjShot = 0;}
-        if (game.time.now - lastProjShot < 100) {return;}
+        if (game.time.now - lastProjShot < 50) {return;}
         lastProjShot = game.time.now;
 
         var proj = projectilePool.getFirstDead();
-        console.log(projectilePool.getFirstDead());
         if (proj === null || proj === undefined){
           return;
         }
@@ -109,8 +107,8 @@
         proj.outOfBoundsKill = true;
 
         proj.reset(player.x,player.y);
-
-        proj.body.velocity.x = 200;
+        if(dir === )
+        proj.body.velocity.x = 800;
         proj.body.velocity.y = 0;
       }
 
@@ -131,25 +129,11 @@
           baddie.body.velocity.x = 150;
           baddie.animations.play('bright');
         }
-        /*if(bHitPlayer){
-          if(baddie.animations.play('bleft') == true){
-            baddie.animations.play('bright');
-            baddie.body.velocity.x=150;
-            //player.body.offset.x = -100;
-          }
-          if(baddie.animations.play('bright') == true){
-            baddie.animations.play('bleft');
-            baddie.body.velocity.x=-150;
-            //player.body.offset.x = 100;
-          }
-        }*/
 
         //player control
       	player.body.velocity.x = 0; //default movement if not controlled
       	cursors = game.input.keyboard.createCursorKeys(); //keyboard event listener for phasor
-
         if (cursors.left.isDown){ //cursors is the event listener for phaser for keys
-
           player.body.velocity.x = -300;
           if(player.body.touching.down){
             player.animations.play('left'); //plays assigned left animation
@@ -157,13 +141,11 @@
           else {
             player.animations.play('Ljump');
           }
-
       	}
         // else if(cursors.SPACEBAR.isDown){
         //   player.body.velocity.x= -500;
         // }
       	else if (cursors.right.isDown){
-
           player.body.velocity.x = 300;
           if(player.body.touching.down){
       		    player.animations.play('right');
@@ -172,15 +154,11 @@
             player.animations.play('Rjump');
           }
       	}
-
-
         else if (cursors.down.isDown){ //lets you drop down faster
           player.animations.play('down');
         }
-
         else{
-
-      		  player.animations.play('righttIdle'); //sets animation to standing still
+      		player.animations.play('righttIdle'); //sets animation to standing still
       		//player.frame = 4; // specifies what frame to set it to.
       	}
         //jump functionality
@@ -194,7 +172,45 @@
           shoot();
         }
     }
+    function playerEvent(sprite){
+      sprite.scale.x = sprite.dirFace;
+      switch(sprite.state){
+        case playerState.idle:
+          idleState(sprite);
+          break;
+        case playerState.walk:
+          walkState(sprite);
+          break;
+        case playerState.jump:
+          jumpState(sprite);
+          break;
+        case playerState.crouch:
+          crouchState(sprite);
+          break;
+      }
+    }
+    function idleState(sprite){
+      //sprite.animations.play('leftIdle');
+      if(cursors.right.isDown || cursors.left.isDown){
+        sprite.animations.play('left');
+        \
 
+        sprite.state = playerState.walk;
+      }
+      if(cursors.up.isDown){
+        sprite.state = playerState.jump;
+      }
+      if(cursors.down.isDown){
+        sprite.animations.play('crouch');
+        sprite.state = playerState.crouch;
+      }
+    }
+    function walkState(sprite){
+
+    }
+    function crouchState(sprite){
+
+    }
   }
 
     </script>
